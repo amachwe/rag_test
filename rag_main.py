@@ -164,7 +164,7 @@ if __name__ == "__main__":
         run.extend(["PROMPT_ONLY",similarity_score,0,0])
         record_run(rag_run)
         record_run(run)
-        time.sleep(15)
+        time.sleep(30)
         
 
         

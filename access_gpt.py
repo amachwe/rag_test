@@ -4,10 +4,10 @@ import logging
 import datetime
 import csv
 import time
+import os
 
-
-openai.organization = "org-h2jlUJiwWckRWJMMyD6vTWsu"
-openai.api_key = "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"
+openai.organization = os.getenv("OAI_ORG")
+openai.api_key = os.getenv("OAI_KEY")
 
 logging.basicConfig(filename="gpt_query_log.txt",filemode="a", level=logging.INFO)
 TIMESTAMP = datetime.datetime.now()

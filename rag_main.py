@@ -16,14 +16,15 @@ import logging
 import datetime
 import csv
 import time
+import os
 
 logging.basicConfig(filename="session_log.txt",filemode="a", level=logging.INFO)
 TIMESTAMP = datetime.datetime.now()
 logging.info(f"\n\n=============================\nSession: {TIMESTAMP}")
 collection_name = "documents"
 connections.connect("default",host="localhost")
-openai.organization = "org-h2jlUJiwWckRWJMMyD6vTWsu"
-openai.api_key = "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"
+openai.organization = os.getenv("OAI_ORG")
+openai.api_key = os.getenv("OAI_KEY")
 
 
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')

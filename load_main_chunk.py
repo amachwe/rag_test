@@ -21,7 +21,7 @@ model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 connections.connect("default", host=HOST)
 
 #colection name
-collection_name = "documents"
+collection_name = "documents_lines"
 
 #root file location for blog posts - change this to point to your own files
 root = "data/posts"
@@ -53,6 +53,7 @@ if __name__ == "__main__":
             FieldSchema("embeddings", DataType.FLOAT_VECTOR, dim=dim),
             FieldSchema("sentence", DataType.VARCHAR, max_length=65535),
             FieldSchema("doc_title", DataType.VARCHAR, max_length=65535),
+            FieldSchema("doc_title", DataType.INT64),
             FieldSchema("sentence_id", DataType.INT64)
         ]
 

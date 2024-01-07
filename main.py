@@ -15,7 +15,8 @@ import os
 import random
 HOST = "localhost"
 WORKERS = 1
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+#all-mpnet-base-v2   all-MiniLM-L6-v2
+model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 
 connections.connect("default",host=HOST)
 BATCH_SIZE = 10

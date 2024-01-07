@@ -12,6 +12,7 @@ import datetime
 import csv
 import time
 import os
+import requests
 
 #Setup logging
 logging.basicConfig(filename="session_log.txt",
@@ -27,11 +28,31 @@ connections.connect("default", host="localhost")
 openai.organization = os.getenv("OAI_ORG")
 openai.api_key = os.getenv("OAI_KEY")
 
+#HF Inference API
+HF_API_TOKEN = os.getenv("HF_Inference_API_Key")
+
 #Initialise sentence transformer model
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
 
 USE_GPT4 = True
+
+# Fetch from HF Inference API
+def fetch_hf_inference(query, docs):
+    headers = {"Authorization": f"Bearer {HF_API_TOKEN}"}
+    API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-xxl"
+    doc_text = '\n'.join(docs)
+    payload = {"inputs":f"Given the following documents: {doc_text[0:1000]}. Answer the following question: {query}"}
+    response = requests.post(API_URL, headers=headers, json=payload)
+    headers = response.headers
+    print(headers)
+    print(response.json())
+    completion = headers.get('x-compute-characters')
+    completion = int(completion) if completion else 0
+    run_data = [completion,  len(doc_text), completion+len(doc_text)
+                , "flan-t5-xxl", len(docs), query]
+    return response.json()[0]['generated_text'], run_data
+
 
 ## Fetch from Open AI - query and RAG docs
 def fetch_openai(query, docs):
@@ -140,8 +161,9 @@ if __name__ == "__main__":
               "Tell me about Prototypes in Javascript",
               "Tell me about 5G-PPP",
               "Tell me about the Tibco Action Processor",
-              "Tell me about the Zodiac FX OpenFlow switch"]
-
+              "Tell me about the Zodiac FX OpenFlow switch", "tell me about some weird errors with ActiveMQ", "tell me about influx db and currency data" ,
+                "tell me about influx db and currency data",
+              "tell me about persimmons from Monkey King"]#"can you do statistical analysis of tic tac toe with arbitrary grid size"]
     # We run each query in the list above and get RAG and non-RAG results which we then compare
     for q in querys:
         docs = []
@@ -160,11 +182,11 @@ if __name__ == "__main__":
         print("\nLLM Response:")
 
         # Get response from GPT-4 with documents (RAG)
-        rag_results, rag_run = fetch_openai(q, docs)
+        rag_results, rag_run = fetch_hf_inference(q, docs)
         print("#RAG: ", rag_results)
 
         # Get response from GPT-4 without documents (Non-RAG)
-        non_rag_results, run = fetch_openai(q, [])
+        non_rag_results, run = fetch_hf_inference(q, [])
         print()
         print("#Non-RAG: ", non_rag_results)
 
